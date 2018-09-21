@@ -86,8 +86,13 @@ for line in open(sys.argv[1],"r"):
                 composer[c.strip()] += 1
         
 if sys.argv[2] == "composer":
-    for c,n in composer.items():
-        print(c + ": "+ str(n))
+    if False: # change to true to print sorted by number of compositions
+        sorted_by_value = sorted(composer.items(), key=lambda kv: kv[1],reverse=True) # source stack overflow
+        for c,n in sorted_by_value:
+            print(c + ": " + str(n))
+    else:
+        for c,n in composer.items():
+            print(c + ": "+ str(n))
 
 if sys.argv[2] == "century":
     keys = list(century.keys())
