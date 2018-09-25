@@ -4,10 +4,10 @@ class Print:
         self.print_id = print_id
         self.partiture = partiture
     
-    def format():
+    def format(self):
         pass
 
-    def composition():
+    def composition(self):
         pass
 
 
