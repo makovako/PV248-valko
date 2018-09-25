@@ -98,4 +98,4 @@ if sys.argv[2] == "century":
     keys = list(century.keys())
     keys.sort()
     for c in keys:    
-        print(c + ": " + str(century[c]))
+        print(c + "th century: " + str(century[c]))
