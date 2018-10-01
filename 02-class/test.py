@@ -52,7 +52,8 @@ def load(filename):
         if line.startswith("Composer"):
             r = re.compile(r"Composer: (.*)")
             m = r.match(line)
-            tmpValues.composers.append(Person(m.group(1),None,None))
+            if m.group(1) is not None:
+                tmpValues.composers.append(Person(m.group(1),None,None))
             continue
             # TODO finnish parsing composers
             if m is None: #  when there is no name
@@ -83,12 +84,19 @@ def load(filename):
         if line.startswith("Composition Year"):
             r = re.compile(r"Composition Year: (\d{4})")
             m = r.match(line)
-
             if m is not None:
                 tmpValues.comp_year = int(m.group(1))
         if line.startswith("Edition"):
             edition = line.split(":")[1].strip()
             tmpValues.edition = None if edition == "" else edition
+        if line.startswith("Editor"):
+            r = re.compile(r"Editor: (.*)")
+            m = r.match(1)
+            # TODO parse editors
+            if m.group(1) is not None:
+                tmpValues.editors.append(Person(m.group(1),None,None))
+
+        
 
         
     
