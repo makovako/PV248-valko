@@ -37,3 +37,6 @@ class Person:
         self.name = name
         self.born = born
         self.died = died
+
+    def __str__(self):
+        return self.name
