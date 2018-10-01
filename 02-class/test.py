@@ -38,15 +38,14 @@ def load(filename):
     tmpValues = Template()
     for line in open(filename,"r"):
         if line == '\n':
-            # TODO create print
+            # maybe DONE
             if tmpValues.print_num is not None:
-                print("new line found")
-                print(tmpValues)
-                # for p in tmpValues["composers"]:
-                #     print(p)
-                # input()
-            # if tmpValues.print_num is None:
-            #     print("found two new lines")
+                prints.append(Print(Edition(Composition(tmpValues.title
+                    ,tmpValues.incipit,tmpValues.key,tmpValues.genre
+                    ,tmpValues.comp_year,tmpValues.voices
+                    ,tmpValues.composers),tmpValues.editors
+                    ,tmpValues.edition),tmpValues.print_num
+                    ,tmpValues.partiture))
             tmpValues = Template()
 
 
@@ -104,7 +103,8 @@ def load(filename):
             r = re.compile(r"Editor: (.*)")
             m = r.match(line)
             # TODO parse editors
-            if m is not None:
+            if m is not None and m.group(1) != "":
+                
                 tmpValues.editors.append(Person(m.group(1),None,None))
         if line.startswith("Voice"):
             voice = line.split(":")[1].strip()
@@ -121,10 +121,10 @@ def load(filename):
             incipit = line.split(":")[1].strip()
             if incipit != "" and tmpValues.incipit == None:
                 tmpValues.incipit = incipit
-        
-        
+    return prints
 
-        
-    
+prints = load(sys.argv[1])
 
-load(sys.argv[1])
+for pr in prints:
+    pr.format()
+    print()
