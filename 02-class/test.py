@@ -15,17 +15,22 @@ class Template:
         self.edition = None
         self.editors = []
         self.voices = []
-        self.partiture = False
+        self.partiture = False # TODO on print yes/no
         self.incipit = None
     
     def __str__(self):
-        return "PN: {}\nCOMP: {}\nTitle: {}\nGenre: {}\nKey: {}\nCompYear: {}\nEdition: {}\n".format(self.print_num,
+        return "PN: {}\nCOMP: {}\nTitle: {}\nGenre: {}\nKey: {}\nCompYear: {}\nEdition: {}\nEditors: {}\nVoices: {}\nPartiture: {}\nIncipit: {}\n".format(self.print_num,
         self.composers,
         self.title,
         self.genre,
         self.key,
         self.comp_year,
-        self.edition)
+        self.edition,
+        self.editors,
+        self.voices,
+        self.partiture,
+        self.incipit
+        )
     
 
 def load(filename):
@@ -39,13 +44,14 @@ def load(filename):
                 print(tmpValues)
                 # for p in tmpValues["composers"]:
                 #     print(p)
-                input()
+                # input()
             # if tmpValues.print_num is None:
             #     print("found two new lines")
             tmpValues = Template()
 
 
         # TODO change all to elif
+        # DONE
         if line.startswith("Print Number"):
             number = line.split(':')[1].strip()
             tmpValues.print_num = None if number == "" else int(number)
@@ -72,30 +78,50 @@ def load(filename):
                     o = re.compile(r"\((.*)--(.*)\)").match(n.group(2))
                     # TODO mas 2 roky skonrtoluj ci su cisla a vyrob osobu
                     # meno sooby v n group 1
+        # DONE
         if line.startswith("Title"):
             title = line.split(":")[1].strip()
             tmpValues.title = None if title == "" else title
+        # DONE
         if line.startswith("Genre"):
             genre = line.split(":")[1].strip()
             tmpValues.genre = None if genre == "" else genre
+        # DONE
         if line.startswith("Key"):
             key = line.split(":")[1].strip()
             tmpValues.key = None if key == "" else key
+        # DONE
         if line.startswith("Composition Year"):
             r = re.compile(r"Composition Year: (\d{4})")
             m = r.match(line)
             if m is not None:
                 tmpValues.comp_year = int(m.group(1))
+        # DONE
         if line.startswith("Edition"):
             edition = line.split(":")[1].strip()
             tmpValues.edition = None if edition == "" else edition
         if line.startswith("Editor"):
             r = re.compile(r"Editor: (.*)")
-            m = r.match(1)
+            m = r.match(line)
             # TODO parse editors
-            if m.group(1) is not None:
+            if m is not None:
                 tmpValues.editors.append(Person(m.group(1),None,None))
-
+        if line.startswith("Voice"):
+            voice = line.split(":")[1].strip()
+            #TODO parse voices
+            if voice != "":
+                tmpValues.voices.append(Voice(voice,None))
+        # DONE
+        if line.startswith("Partiture"):
+            partiture = line.split(":")[1].strip()
+            if "yes" in partiture:
+                tmpValues.partiture = True
+        # DONE
+        if line.startswith("Incipit"):
+            incipit = line.split(":")[1].strip()
+            if incipit != "" and tmpValues.incipit == None:
+                tmpValues.incipit = incipit
+        
         
 
         
