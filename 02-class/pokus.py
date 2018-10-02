@@ -12,11 +12,35 @@ import re
 #     if n.group(2) is not None:
 #         print(n.group(2))
 
-text = "Editor: Böhmová, Z., Grünfeldová, A., Sarauer, A."
-r = re.compile(r"Editor: (.*)")
-m = r.match(text)
-# print(m.group(1))
+text1 = "Böhmová, Z., Grünfeldová, A., Sarauer, A."
+text2 = "Miloslav Klement, Jozef Zsapka"
+text3 = "Jean-Claude Veilhan, Guy Robert"
+text4 = "Gouin, P."
+text5 = "Daniel, Ladislav"
+text6 = "David Lasocki, R. P. Block"
 
-for edit in m.group(1).split(","):
-    edit.strip()
-    print(edit)
+# na konci este strip
+texts = [text1, text2, text3, text4,text5,text6]
+
+r = re.compile(r"((\w+, \w+.?),?)+")
+m = r.match(text1)
+text1 = text1.replace(m.group(2), "")[2:]
+print(text1)
+m = r.match(text1)
+print(m.group(2))
+text1 = text1.replace(m.group(2), "")[2:]
+print(text1)
+m = r.match(text1)
+print(m.group(2))
+text1 = text1.replace(m.group(2), "")[2:]
+print(text1)
+exit()
+for text in texts:
+    m = r.match(text)
+    if m is not None:
+        # v m.group 2
+        print(m.group(2))
+    else:
+        # split ","
+        print(text)
+    
