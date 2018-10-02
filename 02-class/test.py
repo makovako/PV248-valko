@@ -152,6 +152,8 @@ def load(filename):
                     tmpValues.voices.append(Voice(name, range))
                 else: # there is no range
                     tmpValues.voices.append(Voice(voice.strip(),None))
+            else: # there is no voice, but i need to remember position (Voice Number)
+                tmpValues.voices.append(None)
         # DONE
         if line.startswith("Partiture"):
             partiture = line.split(":")[1].strip()
