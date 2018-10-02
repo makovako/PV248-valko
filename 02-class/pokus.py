@@ -23,6 +23,18 @@ text6 = "David Lasocki, R. P. Block"
 texts = [text1, text2, text3, text4,text5,text6]
 
 r = re.compile(r"((\w+, \w+.?),?)+")
+for text in texts:
+    if r.match(text) is not None:
+        while text != "":
+            m = r.match(text)        
+            print(m.group(2))
+            text = text.replace(m.group(2), "")[2:]
+            print("Left: "+text)
+    else:
+        comps = text.split(",")
+        for comp in comps:
+            print(comp)
+exit()
 m = r.match(text1)
 text1 = text1.replace(m.group(2), "")[2:]
 print(text1)
