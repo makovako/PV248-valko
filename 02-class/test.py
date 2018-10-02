@@ -15,9 +15,10 @@ class Template:
         self.edition = None
         self.editors = []
         self.voices = []
-        self.partiture = False # TODO on print yes/no
+        self.partiture = False
         self.incipit = None
     
+    # helper method for debugging
     def __str__(self):
         return "PN: {}\nCOMP: {}\nTitle: {}\nGenre: {}\nKey: {}\nCompYear: {}\nEdition: {}\nEditors: {}\nVoices: {}\nPartiture: {}\nIncipit: {}\n".format(self.print_num,
         self.composers,
@@ -37,9 +38,8 @@ def load(filename):
     prints = []
     tmpValues = Template()
     for line in open(filename,"r"):
-        if line == '\n':
-            # maybe DONE
-            if tmpValues.print_num is not None:
+        if line == '\n': # save current print, and create blank one from template
+            if tmpValues.print_num is not None: # when there are more new lines between prints, ignore second one
                 prints.append(Print(Edition(Composition(tmpValues.title
                     ,tmpValues.incipit,tmpValues.key,tmpValues.genre
                     ,tmpValues.comp_year,tmpValues.voices
@@ -70,7 +70,7 @@ def load(filename):
                 else:
                     name = n.group(1).strip()
                     n.group(2).strip()
-                    t = re.compile(r"\d\d\d\d") # pattern for for digits = year
+                    t = re.compile(r"\d\d\d\d") # pattern for four digits = year
                     born = None
                     died = None
                     if "-" in n.group(2):
@@ -94,7 +94,7 @@ def load(filename):
                             o = t.match(n.group(2)[1:])
                             if o is not None and o.group(0) != "":
                                 died = int(o.group(0))
-                        else:
+                        else: # when there is only one year, i assign it to born
                             o = t.match(n.group(2))
                             if o is not None and o.group(0) != "":
                                 born = int(o.group(0))
@@ -126,22 +126,32 @@ def load(filename):
             r = re.compile(r"Editor: (.*)")
             m = r.match(line)
             if m is not None and m.group(1) != "":
-                r = re.compile(r"((\w+, \w+.?),?)+")
+                r = re.compile(r"((\w+, \w+.?),?)+") # pattern for word, word = lastname, firstname and there may be comma and other persons
                 text = m.group(1)
                 if r.match(text) is not None: # if firstname and lastname are separated by comma
                     while text != "":
-                        m = r.match(text)        
-                        tmpValues.editors.append(Person(m.group(2).strip(), None,None))
-                        text = text.replace(m.group(2), "")[2:] # [2:] because there is " ," left in the beginning
+                        m = r.match(text) # match them
+                        tmpValues.editors.append(Person(m.group(2).strip(), None,None))# add them to output
+                        text = text.replace(m.group(2), "")[2:] # remove them from string; # [2:] because there is ", " left in the beginning
                 else: # if firstname and lastname are together, and persons are separated by comma
                     comps = text.split(",")
                     for comp in comps:
                         tmpValues.editors.append(Person(comp.strip(),None,None))
+        # DONE
         if line.startswith("Voice"):
             voice = line.split(":")[1].strip()
-            #TODO parse voices
-            if voice != "":
-                tmpValues.voices.append(Voice(voice,None))
+            if voice != "": # if there is some voice
+                r = re.compile(r"(\w+--\w+).*") # match two words and "--"" between them
+                m = r.match(voice)
+                if m is not None: # if there is range
+                    range = m.group(1)
+                    voice = voice.replace(m.group(1),"")[2:].strip() # strip range and ", "
+                    name = None
+                    if voice != "":
+                        name = voice # if there is anything left for the name, assign it
+                    tmpValues.voices.append(Voice(name, range))
+                else: # there is no range
+                    tmpValues.voices.append(Voice(voice.strip(),None))
         # DONE
         if line.startswith("Partiture"):
             partiture = line.split(":")[1].strip()
@@ -155,7 +165,6 @@ def load(filename):
     return prints
 
 prints = load(sys.argv[1])
-# input()
 for pr in prints:
     pr.format()
     print()
