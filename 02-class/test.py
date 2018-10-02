@@ -47,36 +47,58 @@ def load(filename):
                     ,tmpValues.edition),tmpValues.print_num
                     ,tmpValues.partiture))
             tmpValues = Template()
-
-
-        # TODO change all to elif
         # DONE
         if line.startswith("Print Number"):
             number = line.split(':')[1].strip()
             tmpValues.print_num = None if number == "" else int(number)
+        # DONE
         if line.startswith("Composer"):
             r = re.compile(r"Composer: (.*)")
             m = r.match(line)
-            if m.group(1) is not None:
-                tmpValues.composers.append(Person(m.group(1),None,None))
-            continue
-            # TODO finnish parsing composers
-            if m is None: #  when there is no name
+            if m is None or m.group(1) == "": #  when there is no name
                 continue
             rawcomp = m.group(1)
             comp = rawcomp.split(";")
             for c in comp:
                 if not c:
                     continue
-                s = re.compile(r"(.*) \((.*)\)")
+                s = re.compile(r"(.*) \((.*)\)") # separete name and years
                 n = s.match(c)
                 if n is None: # doesnt have (years)
-                    composer = Person(c,None,None)
-                    tmpValues["composers"].append(composer)
+                    composer = Person(c.strip(),None,None)
+                    tmpValues.composers.append(composer)
                 else:
-                    o = re.compile(r"\((.*)--(.*)\)").match(n.group(2))
-                    # TODO mas 2 roky skonrtoluj ci su cisla a vyrob osobu
-                    # meno sooby v n group 1
+                    name = n.group(1).strip()
+                    n.group(2).strip()
+                    t = re.compile(r"\d\d\d\d") # pattern for for digits = year
+                    born = None
+                    died = None
+                    if "-" in n.group(2):
+                        # if there is "-", split by "-" or "--"
+                        if "--" in n.group(2):
+                            years = n.group(2).split("--")
+                        else:
+                            years = n.group(2).split("-")
+                        o = t.match(years[0])
+                        if o is not None:
+                            born = int(o.group(0))
+                        o = t.match(years[1])
+                        if o is not None:
+                            died = int(o.group(0))
+                    else: # otherwise try to find *,+, or there will be only one year
+                        if "*" in n.group(2):
+                            o = t.match(n.group(2)[1:])
+                            if o is not None and o.group(0) != "":
+                                born = int(o.group(0))
+                        elif "+" in n.group(2):
+                            o = t.match(n.group(2)[1:])
+                            if o is not None and o.group(0) != "":
+                                died = int(o.group(0))
+                        else:
+                            o = t.match(n.group(2))
+                            if o is not None and o.group(0) != "":
+                                born = int(o.group(0))
+                    tmpValues.composers.append(Person(name, born, died))
         # DONE
         if line.startswith("Title"):
             title = line.split(":")[1].strip()
@@ -124,7 +146,7 @@ def load(filename):
     return prints
 
 prints = load(sys.argv[1])
-
+input()
 for pr in prints:
     pr.format()
     print()
