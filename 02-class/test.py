@@ -164,6 +164,17 @@ def load(filename):
             incipit = line.split(":")[1].strip()
             if incipit != "" and tmpValues.incipit == None:
                 tmpValues.incipit = incipit
+    # on last print it doesnt catch new line at the end of the file
+    # so after assigning all tmpValues, it ends reading the file in Incipit
+    # and doesnt add it to prints
+    # till it is still saved in tmValues
+    # i can add that print afterwards
+    prints.append(Print(Edition(Composition(tmpValues.title
+                    ,tmpValues.incipit,tmpValues.key,tmpValues.genre
+                    ,tmpValues.comp_year,tmpValues.voices
+                    ,tmpValues.composers),tmpValues.editors
+                    ,tmpValues.edition),tmpValues.print_num
+                    ,tmpValues.partiture))
     return prints
 
 prints = load(sys.argv[1])
