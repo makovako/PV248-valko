@@ -41,10 +41,12 @@ class Print:
         if self.edition.composition.voices:
             for i in range(len(self.edition.composition.voices)):
                 voice = self.edition.composition.voices[i]
-                if voice.range is not None:
+                if voice.range is not None and voice.name is not None:
                     print("Voice {}: {}, {}".format(i+1,voice.range,voice.name))
-                else:
+                elif voice.name is not None:
                     print("Voice {}: {}".format(i+1,voice.name))
+                else:
+                    print("Voice {}: {}".format(i+1,voice.range))
         if self.partiture:
             print("Partiture: yes")
         else:
