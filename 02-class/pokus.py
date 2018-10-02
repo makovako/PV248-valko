@@ -1,17 +1,19 @@
 #!/usr/bin/python3
 
 import re
-# text = "Composer: Haydn, Joseph; Mozart, Wolfgang Amadeus (1756--1791)"
-# r = re.compile(r"Composer: (.*)")
-# m = r.match(text)
+'''
+text = "Composer: Haydn, Joseph; Mozart, Wolfgang Amadeus (1756--1791)"
+r = re.compile(r"Composer: (.*)")
+m = r.match(text)
 
-# for comp in m.group(1).split(';'):
-#     s = re.compile(r"(.*) \((.*)\)")
-#     n = s.match(comp)
-#     print(n.group(1))
-#     if n.group(2) is not None:
-#         print(n.group(2))
-
+for comp in m.group(1).split(';'):
+    s = re.compile(r"(.*) \((.*)\)")
+    n = s.match(comp)
+    print(n.group(1))
+    if n.group(2) is not None:
+        print(n.group(2))
+'''
+'''
 text1 = "Böhmová, Z., Grünfeldová, A., Sarauer, A."
 text2 = "Miloslav Klement, Jozef Zsapka"
 text3 = "Jean-Claude Veilhan, Guy Robert"
@@ -55,4 +57,22 @@ for text in texts:
     else:
         # split ","
         print(text)
-    
+'''
+voice1 = 'Bes1--d2, bassoon, part'
+voice2 = 'd1--bes2; a--d3'
+voice3 = 'Bes1--d2'
+voice4 = 'g-d3, violin,  part'
+
+voices  = [voice1, voice2, voice3, voice4]
+
+r = re.compile(r"(\w+--\w+).*")
+for voice in voices:
+    m = r.match(voice)
+    if m is not None:
+        print(m.group(1))
+        voice = voice.replace(m.group(1),"")[2:]
+        print(voice.strip())
+    else:
+        print(voice)
+        
+        
