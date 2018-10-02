@@ -121,13 +121,22 @@ def load(filename):
         if line.startswith("Edition"):
             edition = line.split(":")[1].strip()
             tmpValues.edition = None if edition == "" else edition
+        # DONE
         if line.startswith("Editor"):
             r = re.compile(r"Editor: (.*)")
             m = r.match(line)
-            # TODO parse editors
             if m is not None and m.group(1) != "":
-                
-                tmpValues.editors.append(Person(m.group(1),None,None))
+                r = re.compile(r"((\w+, \w+.?),?)+")
+                text = m.group(1)
+                if r.match(text) is not None: # if firstname and lastname are separated by comma
+                    while text != "":
+                        m = r.match(text)        
+                        tmpValues.editors.append(Person(m.group(2).strip(), None,None))
+                        text = text.replace(m.group(2), "")[2:] # [2:] because there is " ," left in the beginning
+                else: # if firstname and lastname are together, and persons are separated by comma
+                    comps = text.split(",")
+                    for comp in comps:
+                        tmpValues.editors.append(Person(comp.strip(),None,None))
         if line.startswith("Voice"):
             voice = line.split(":")[1].strip()
             #TODO parse voices
@@ -146,7 +155,7 @@ def load(filename):
     return prints
 
 prints = load(sys.argv[1])
-input()
+# input()
 for pr in prints:
     pr.format()
     print()
