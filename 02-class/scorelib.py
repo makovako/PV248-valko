@@ -30,7 +30,7 @@ class Print:
         if self.edition.composition.key is not None:
             print("Key: " + self.edition.composition.key)
         if self.edition.composition.year is not None:
-            print("Compostion Year: " + str(self.edition.composition.year))
+            print("Composition Year: " + str(self.edition.composition.year))
         if self.edition.name is not None:
             print("Edition: " + self.edition.name)
         if self.edition.authors:
