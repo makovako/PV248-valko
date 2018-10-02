@@ -169,12 +169,17 @@ def load(filename):
     # and doesnt add it to prints
     # till it is still saved in tmValues
     # i can add that print afterwards
-    prints.append(Print(Edition(Composition(tmpValues.title
-                    ,tmpValues.incipit,tmpValues.key,tmpValues.genre
-                    ,tmpValues.comp_year,tmpValues.voices
-                    ,tmpValues.composers),tmpValues.editors
-                    ,tmpValues.edition),tmpValues.print_num
-                    ,tmpValues.partiture))
+    # when there are two new lines at the end
+    # then the last print will be added in for loop
+    # and this condition catches that option
+    # so it wont add new new print with deafalut None print number
+    if tmpValues.print_num is not None:
+        prints.append(Print(Edition(Composition(tmpValues.title
+                        ,tmpValues.incipit,tmpValues.key,tmpValues.genre
+                        ,tmpValues.comp_year,tmpValues.voices
+                        ,tmpValues.composers),tmpValues.editors
+                        ,tmpValues.edition),tmpValues.print_num
+                        ,tmpValues.partiture))
     return prints
 
 prints = load(sys.argv[1])
