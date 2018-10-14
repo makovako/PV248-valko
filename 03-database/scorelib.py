@@ -44,8 +44,8 @@ class Print:
             for i in range(len(self.edition.composition.voices)):
                 voice = self.edition.composition.voices[i]
                 if voice is None:
-                    continue
-                if voice.range is not None and voice.name is not None:
+                    print("Voice {}: ".format(i+1))
+                elif voice.range is not None and voice.name is not None:
                     print("Voice {}: {}, {}".format(i+1,voice.range,voice.name))
                 elif voice.name is not None:
                     print("Voice {}: {}".format(i+1,voice.name))
@@ -121,7 +121,7 @@ class Template:
         self.incipit
         )
     
-# TODO dont split by : because in some title there is :, rather match in all cases
+# DONE
 def load(filename):
     prints = []
     tmpValues = Template()
@@ -158,7 +158,7 @@ def load(filename):
                 else:
                     name = n.group(1).strip()
                     n.group(2).strip()
-                    t = re.compile(r"\d\d\d\d") # pattern for four digits = year
+                    t = re.compile(r"\d{4}") # pattern for four digits = year
                     born = None
                     died = None
                     if "-" in n.group(2):
@@ -167,47 +167,58 @@ def load(filename):
                             years = n.group(2).split("--")
                         else:
                             years = n.group(2).split("-")
-                        o = t.match(years[0])
+                        o = t.match(years[0]) if len(years[0]) == 4 else None
                         if o is not None:
                             born = int(o.group(0))
-                        o = t.match(years[1])
+                        o = t.match(years[1]) if len(years[1]) == 4 else None
                         if o is not None:
                             died = int(o.group(0))
                     else: # otherwise try to find *,+, or there will be only one year
                         if "*" in n.group(2):
-                            o = t.match(n.group(2)[1:])
+                            o = t.match(n.group(2)[1:]) if len(n.group(2)[1:]) == 4 else None
                             if o is not None and o.group(0) != "":
                                 born = int(o.group(0))
                         elif "+" in n.group(2):
-                            o = t.match(n.group(2)[1:])
+                            o = t.match(n.group(2)[1:]) if len(n.group(2)[1:]) == 4 else None
                             if o is not None and o.group(0) != "":
                                 died = int(o.group(0))
                         else: # when there is only one year, i assign it to born
-                            o = t.match(n.group(2))
+                            o = t.match(n.group(2)) if len(n.group(2)) == 4 else None
                             if o is not None and o.group(0) != "":
                                 born = int(o.group(0))
                     tmpValues.composers.append(Person(name, born, died))
         # DONE
         if line.startswith("Title"):
-            title = line.split(":")[1].strip()
-            tmpValues.title = None if title == "" else title
+            r = re.compile(r"Title: (.*)")
+            m = r.match(line)
+            if m is not None and m.group(1) != "":
+                title = m.group(1).strip()
+                tmpValues.title = None if title == "" else title
         # DONE
         if line.startswith("Genre"):
-            genre = line.split(":")[1].strip()
-            tmpValues.genre = None if genre == "" else genre
+            r = re.compile(r"Genre: (.*)")
+            m = r.match(line)
+            if m is not None and m.group(1) != "":
+                genre = m.group(1).strip()
+                tmpValues.genre = None if genre == "" else genre
         # DONE
         if line.startswith("Key"):
-            key = line.split(":")[1].strip()
-            tmpValues.key = None if key == "" else key
-        # TODO this match doesnt work right, it matches DDDD/DD
+            r = re.compile(r"Key: (.*)")
+            m = r.match(line)
+            if m is not None and m.group(1) != "":
+                key = m.group(1).strip()
+                tmpValues.key = None if key == "" else key
+        # DONE
         if line.startswith("Composition Year"):
             r = re.compile(r"Composition Year: (\d{4})")
             m = r.match(line)
             if m is not None:
-                tmpValues.comp_year = int(m.group(1))
+                tmpValues.comp_year = int(m.group(1)) if len(m.group(1)) == 4 else None
         # DONE
         if line.startswith("Edition"):
-            edition = line.split(":")[1].strip()
+            r = re.compile(r"Edition: (.*)")
+            m = r.match(line)
+            edition = m.group(1).strip()
             tmpValues.edition = None if edition == "" else edition
         # DONE
         if line.startswith("Editor"):
@@ -225,11 +236,13 @@ def load(filename):
                     comps = text.split(",")
                     for comp in comps:
                         tmpValues.editors.append(Person(comp.strip(),None,None))
-        # TODO better check by number
+        # DONE
         if line.startswith("Voice"):
-            voice = line.split(":")[1].strip()
-            if voice != "": # if there is some voice
-                r = re.compile(r"(\w+--\w+).*") # match two words and "--"" between them
+            n = re.compile(r"Voice \d*: (.*)")
+            o = n.match(line)
+            voice = o.group(1).strip() if o is not None else None
+            if voice is not None and voice != "": # if there is some voice
+                r = re.compile(r"(\w+--[\w\(\)]+).*") # match two words and "--"" between them
                 m = r.match(voice)
                 if m is not None: # if there is range
                     range = m.group(1)
@@ -244,14 +257,20 @@ def load(filename):
                 tmpValues.voices.append(None)
         # DONE
         if line.startswith("Partiture"):
-            partiture = line.split(":")[1].strip()
-            if "yes" in partiture:
-                tmpValues.partiture = True
+            r = re.compile(r"Partiture: (.*)")
+            m = r.match(line)
+            if m is not None and m.group(1) != "":            
+                partiture = m.group(1).strip()
+                if "yes" in partiture:
+                    tmpValues.partiture = True
         # DONE
         if line.startswith("Incipit"):
-            incipit = line.split(":")[1].strip()
-            if incipit != "" and tmpValues.incipit == None:
-                tmpValues.incipit = incipit
+            r = re.compile(r"Incipit: (.*)")
+            m = r.match(line)
+            if m is not None and m.group(1) != "":
+                incipit = m.group(1).strip()
+                if incipit != "" and tmpValues.incipit == None:
+                    tmpValues.incipit = incipit
     # on last print it doesnt catch new line at the end of the file
     # so after assigning all tmpValues, it ends reading the file in Incipit
     # and doesnt add it to prints
