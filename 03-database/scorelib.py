@@ -44,8 +44,8 @@ class Print:
             for i in range(len(self.edition.composition.voices)):
                 voice = self.edition.composition.voices[i]
                 if voice is None:
-                    print("Voice {}: ".format(i+1))
-                elif voice.range is not None and voice.name is not None:
+                    continue
+                if voice.range is not None and voice.name is not None:
                     print("Voice {}: {}, {}".format(i+1,voice.range,voice.name))
                 elif voice.name is not None:
                     print("Voice {}: {}".format(i+1,voice.name))
@@ -238,9 +238,14 @@ def load(filename):
                         tmpValues.editors.append(Person(comp.strip(),None,None))
         # DONE
         if line.startswith("Voice"):
-            n = re.compile(r"Voice \d*: (.*)")
+            n = re.compile(r"Voice (\d*):(.*)")
             o = n.match(line)
-            voice = o.group(1).strip() if o is not None else None
+            if o is None:
+                print("\"{}\"".format(line))
+            number = int(o.group(1).strip())
+            voice = o.group(2).strip() if o is not None else None
+            range = None
+            name = None
             if voice is not None and voice != "": # if there is some voice
                 r = re.compile(r"(\w+--[\w\(\)]+).*") # match two words and "--"" between them
                 m = r.match(voice)
@@ -250,11 +255,16 @@ def load(filename):
                     name = None
                     if voice != "":
                         name = voice # if there is anything left for the name, assign it
-                    tmpValues.voices.append(Voice(name, range))
                 else: # there is no range
-                    tmpValues.voices.append(Voice(voice.strip(),None))
-            else: # there is no voice, but i need to remember position (Voice Number)
+                    name = voice.strip()
+            # else: # there is no voice, but i need to remember position (Voice Number)
+                # tmpValues.voices.append(None)
+            while len(tmpValues.voices) < number-1:
                 tmpValues.voices.append(None)
+            if name == None and range == None:
+                tmpValues.voices.append(None)
+            else:
+                tmpValues.voices.append(Voice(name,range))
         # DONE
         if line.startswith("Partiture"):
             r = re.compile(r"Partiture: (.*)")
