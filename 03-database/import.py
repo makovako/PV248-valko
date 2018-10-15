@@ -4,31 +4,47 @@ from scorelib import Composition,Edition,Person,Print,Voice,load
 # edition year nechat null
 import sys, sqlite3
 
-init_database_setup = [
-    "create table person ( id integer primary key not null, born integer, died integer, name varchar not null );",
-    "create table score ( id integer primary key not null,name varchar,genre varchar, key varchar,incipit varchar,year integer );",
-    "create table voice ( id integer primary key not null,number integer not null,score integer references score( id ) not null,range varchar,name varchar );",
-    "create table edition ( id integer primary key not null,score integer references score( id ) not null,name varchar,year integer );",
-    "create table score_author( id integer primary key not null,score integer references score( id ) not null,composer integer references person( id ) not null );",
-    "create table edition_author( id integer primary key not null,edition integer references edition( id ) not null,editor integer references person( id ) not null );",
-    "create table print ( id integer primary key not null,partiture char(1) default 'N' not null,edition integer references edition( id ) );"
-]
 
+# database name
+database = sys.argv[2]
 
-def create_database(name):
-    f = open(name,"w")
-    f.close()
-    conn = sqlite3.connect(name)
-    cur = conn.cursor()
-    for comm in init_database_setup:
-        cur.execute(comm)
-    conn.commit()
-    
+def insert_print(pr, cur):
+    # check composers
+    composer_ids = []
+    for comp in pr.edition.composition.authors:
+        cur.execute("select id from person where name = {};".format(comp.name))
+        composers = cur.fetchall()
+        if len(composers) == 1:
+            composer_ids.append(composers[0][0])
+            # TODO update years if necessary
+            # UPDATE Customers SET ContactName = 'Alfred Schmidt', City= 'Frankfurt' WHERE CustomerID = 1;
+        else:
+            pass
+            # TODO create new person and append new id
+    # check composition
+    # TODO create connection in score authors
+    # check eidtors
+    # check edition
+    # TODO create connection in edition authors
+    # check voices
+    # TODO need composition id
+    # check print
 
+# reset file
+f = open(database,"w")
+f.close()
 
-# print(sys.argv[2])
-# create_database(sys.argv[2])
+conn = sqlite3.connect(database)
+cur = conn.cursor()
+# create tables from sql script
+script = open("scorelib.sql","r")
+cur.executescript(script.read())
+script.close
+
 prints = load(sys.argv[1])
-for pr in prints:
-    pr.format()
-    print()
+
+# for pr in prints:
+#     insert_print(pr,cur)
+
+conn.commit()
+conn.close()
