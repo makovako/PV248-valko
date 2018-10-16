@@ -19,5 +19,6 @@ cur.execute("select id from person where name = 'adam'")
 # print(cur.fetchall())
 for i in cur.fetchall():
     print(i[0])
+cur.execute("update person set name = ? where id = ?",("jozef",1))
 conn.commit()
 conn.close()
