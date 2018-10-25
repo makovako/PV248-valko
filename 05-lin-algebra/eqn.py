@@ -71,10 +71,7 @@ else:
         answer = ""
         solution = np.linalg.solve(coeficients,constants)
         for i in range(len(variables)):
-            # TODO solve difference between float and intereg
-            # use isinstance(x,int/float)
-            # if int use {:d} in formet, otherwise default looks nice
-            answer += " {} = {},".format(variables[i],solution[i])
+            answer += " {} = {},".format(variables[i],int(solution[i]) if solution[i].is_integer() else solution[i])
         print("solution:{}".format(answer[:-1]))
     else:
         print("solution space dimension: {}".format(dimension))
