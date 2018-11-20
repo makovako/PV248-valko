@@ -57,8 +57,8 @@ if id == "average":
     # print(datepoints)
     output["mean"] = np.mean(list(expoints.values()))
     output["median"] = np.median(list(expoints.values()))
-    output["passed"] = np.count_nonzero(list(expoints.values()))
-    output["total"] = np.sum(list(expoints.values()))
+    output["passed"] = int(np.count_nonzero(list(expoints.values())))
+    output["total"] = float(np.sum(list(expoints.values())))
     start = "2018-09-17"
     x = []
     x.append(0)
@@ -91,15 +91,19 @@ if id == "average":
 
     slo, incpt, _, _ = np.linalg.lstsq(matrix,y,rcond=None) # toto pouzi
 
-    end16 = dt(*dateToTuple(start)) + td(days=int(16/slo))
-    end20 = dt(*dateToTuple(start)) + td(days=int(20/slo))
     # print(end)
     # slo = 0
     if float(slo) != 0:
         output["regression slope"] = float(slo)
+        end16 = dt(*dateToTuple(start)) + td(days=int(16/slo))
+        end20 = dt(*dateToTuple(start)) + td(days=int(20/slo))
 
         output["date 16"] = end16.strftime("%Y-%m-%d")
         output["date 20"] = end20.strftime("%Y-%m-%d")
+    else:
+        output["regression slope"] = float(slo)
+
+
 else:
     # print(df.to_string())
     dates = set()
@@ -139,8 +143,8 @@ else:
     # print(datepoints)
     output["mean"] = np.mean(list(expoints.values()))
     output["median"] = np.median(list(expoints.values()))
-    output["passed"] = np.count_nonzero(list(expoints.values()))
-    output["total"] = np.sum(list(expoints.values()))
+    output["passed"] = int(np.count_nonzero(list(expoints.values())))
+    output["total"] = float(np.sum(list(expoints.values())))
     start = "2018-09-17"
     x = []
     x.append(0)
@@ -180,15 +184,21 @@ else:
     # print(int(16/slope))
     # print(int(16/sl))
     # print(int(16/slo))
-    end16 = dt(*dateToTuple(start)) + td(days=int(16/slo))
-    end20 = dt(*dateToTuple(start)) + td(days=int(20/slo))
     # print(end)
     # slo = 0
-    if float(slo) != 0:
+    # print(slo)
+    if float(slo) != 0.0:
+        # print("here")
         output["regression slope"] = float(slo)
+        end16 = dt(*dateToTuple(start)) + td(days=int(16/slo))
+        end20 = dt(*dateToTuple(start)) + td(days=int(20/slo))
 
         output["date 16"] = end16.strftime("%Y-%m-%d")
         output["date 20"] = end20.strftime("%Y-%m-%d")
+    else:
+        output["regression slope"] = float(slo)
+    # print(output)
+
     # plt.show()
 
 print(json.dumps(output,indent=4,ensure_ascii=False))
