@@ -141,8 +141,8 @@ else:
         datepoints[dates[i]] += datepoints[dates[i-1]]
     # print(expoints) 
     # print(datepoints)
-    output["mean"] = np.mean(list(expoints.values()))
-    output["median"] = np.median(list(expoints.values()))
+    output["mean"] = float(np.mean(list(expoints.values())))
+    output["median"] = float(np.median(list(expoints.values())))
     output["passed"] = int(np.count_nonzero(list(expoints.values())))
     output["total"] = float(np.sum(list(expoints.values())))
     start = "2018-09-17"
