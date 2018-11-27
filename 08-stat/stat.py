@@ -20,12 +20,16 @@ if mode == "dates":
             if date in header:
                 dateheader[date].append(header)
     for k,v in dateheader.items():
+        mean = 0
+        out = {}
+        for col in v:
+            data = df[col]
+            mean += data.mean()
         x = []
         for col in v:
             x.append(df[col])
         data = pd.concat(x)
-        out = {}
-        out["mean"] = data.mean()
+        out["mean"] = mean
         out["median"] = data.median()
         out["passed"] = len(data[data > 0])
         out["first"] = data.quantile(0.25)
@@ -57,12 +61,16 @@ if mode == "exercises":
             if "/"+ex in header:
                 exheader[ex].append(header)
     for k,v in exheader.items():
+        out = {}
+        mean = 0
+        for col in v:
+            data = df[col]
+            mean += data.mean()
         x = []
         for col in v:
             x.append(df[col])
         data = pd.concat(x)
-        out = {}
-        out["mean"] = data.mean()
+        out["mean"] = mean
         out["median"] = data.median()
         out["passed"] = len(data[data > 0])
         out["first"] = data.quantile(0.25)
