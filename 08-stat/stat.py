@@ -69,10 +69,11 @@ if mode == "exercises":
         # for col in v:
         #     data = df[col]
         #     mean += data.mean()
-        x = []
-        for col in v:
-            x.append(df[col])
-        data = pd.concat(x)
+        # x = []
+        # for col in v:
+        #     x.append(df[col])
+        data = df[v].sum(axis=1)
+        # data = pd.concat(x)
         out["mean"] = data.mean()
         out["median"] = data.median()
         out["passed"] = len(data[data > 0])
