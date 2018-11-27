@@ -31,6 +31,7 @@ if id == "average":
     dates = list(dates)
     dates.sort()
     ls = df.index[df['student']==0].tolist()
+    # print(ls)
     id = 0
     expoints = {}
     datepoints = {}
@@ -41,8 +42,7 @@ if id == "average":
     for ex in exercises:
         for header in headers:
             if "/"+ex in header:
-                if df.at[id,header] > expoints[ex]:
-                    expoints[ex] = df.at[id,header]
+                expoints[ex] += df.at[id,header]
     for i in range(len(dates)):
         for header in headers:
             date = dates[i]
