@@ -22,14 +22,17 @@ if mode == "dates":
     for k,v in dateheader.items():
         mean = 0
         out = {}
-        for col in v:
-            data = df[col]
-            mean += data.mean()
-        x = []
-        for col in v:
-            x.append(df[col])
-        data = pd.concat(x)
-        out["mean"] = mean
+        # sum data per studnetand count with that
+        data = df[v].sum(axis=1)
+        # for col in v:
+        #     data = df[col]
+        #     print(data)
+        #     mean += data.mean()
+        # x = []
+        # for col in v:
+        #     x.append(df[col])
+        # data = pd.concat(x)
+        out["mean"] = data.mean()
         out["median"] = data.median()
         out["passed"] = len(data[data > 0])
         out["first"] = data.quantile(0.25)
@@ -62,15 +65,15 @@ if mode == "exercises":
                 exheader[ex].append(header)
     for k,v in exheader.items():
         out = {}
-        mean = 0
-        for col in v:
-            data = df[col]
-            mean += data.mean()
+        # mean = 0
+        # for col in v:
+        #     data = df[col]
+        #     mean += data.mean()
         x = []
         for col in v:
             x.append(df[col])
         data = pd.concat(x)
-        out["mean"] = mean
+        out["mean"] = data.mean()
         out["median"] = data.median()
         out["passed"] = len(data[data > 0])
         out["first"] = data.quantile(0.25)
