@@ -6,7 +6,6 @@ import numpy as np
 from datetime import date as dt
 from datetime import timedelta as td
 from scipy import stats
-import matplotlib.pyplot as plt
 
 def dateToTuple(date):
     a,b,c = date.strip().split("-")
@@ -76,23 +75,11 @@ if id == "average":
     # x = np.vstack([x, np.ones(len(x))]).T
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     sl , _ ,_ ,_ = np.linalg.lstsq(x.reshape(-1,1),y,rcond=None)
-    plt.plot(x, y, 'bo')
-    # print(x)
-    plt.plot(x, slope*x, 'r-')
-    plt.plot(x,intercept + slope*x,'g-')
-    plt.plot(x,sl*x,'b-')
-    # print(slope)
-    # print(sl)
-    # plt.legend()
-    # print(16/slope)
-    # print(16/sl)
-    # plt.show()
+ 
     matrix = np.stack([x**d for d in [1]], axis=-1)
 
     slo, incpt, _, _ = np.linalg.lstsq(matrix,y,rcond=None) # toto pouzi
 
-    # print(end)
-    # slo = 0
     if float(slo) != 0:
         output["regression slope"] = float(slo)
         end16 = dt(*dateToTuple(start)) + td(days=int(16/slo))
@@ -105,7 +92,6 @@ if id == "average":
 
 
 else:
-    # print(df.to_string())
     dates = set()
     exercises = set()
     headers = df.columns.values[1:]
@@ -139,8 +125,6 @@ else:
                     datepoints[date] = df.at[id,header]
     for i in range(1,len(dates)):
         datepoints[dates[i]] += datepoints[dates[i-1]]
-    # print(expoints) 
-    # print(datepoints)
     output["mean"] = float(np.mean(list(expoints.values())))
     output["median"] = float(np.median(list(expoints.values())))
     output["passed"] = int(np.count_nonzero(list(expoints.values())))
@@ -154,12 +138,9 @@ else:
     y = []
     y.append(0)
     y.extend(datepoints.values())
-    # print(x)
-    # print(y)
 
     x = np.array(x)
     y = np.array(y)
-    # x = np.vstack([x, np.ones(len(x))]).T
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     sl , inc ,_ ,_ = np.linalg.lstsq(x.reshape(-1,1),y,rcond=None)
 
@@ -167,28 +148,8 @@ else:
 
     matrix = np.stack([x**d for d in [1]], axis=-1)
     slo, incpt, _, _ = np.linalg.lstsq(matrix,y,rcond=None) # toto pouzi
-    # output["regression slope"] = float(slo)
-    # print("{} - {}".format(slope,intercept))
-    # print("{} - {}".format(sl,inc))
 
-    # print("{} - {}".format(slo,incpt))
-
-    plt.plot(x, y, 'bo')
-    # print(x)
-    plt.plot(x, slope*x, 'r-')
-    plt.plot(x,intercept + slope*x,'g-')
-    plt.plot(x, slo*x,'b-')
-    # print(slope)
-    # print(sl)
-    # plt.legend()
-    # print(int(16/slope))
-    # print(int(16/sl))
-    # print(int(16/slo))
-    # print(end)
-    # slo = 0
-    # print(slo)
     if float(slo) != 0.0:
-        # print("here")
         output["regression slope"] = float(slo)
         end16 = dt(*dateToTuple(start)) + td(days=int(16/slo))
         end20 = dt(*dateToTuple(start)) + td(days=int(20/slo))
@@ -197,8 +158,5 @@ else:
         output["date 20"] = end20.strftime("%Y-%m-%d")
     else:
         output["regression slope"] = float(slo)
-    # print(output)
-
-    # plt.show()
 
 print(json.dumps(output,indent=4,ensure_ascii=False))
